@@ -2,7 +2,6 @@ from Char import Char
 
 # A convenience class to make using entroPy chars less painful
 # Strings shall me immutable. TODO: make everything immutable other than by decay? Basically remove setters and make math ops class methods
-#TODO: maybe make it so in strings that only a single char decays at a time
 class String:
 
     _chars = ()
