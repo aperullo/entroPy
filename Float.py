@@ -40,6 +40,8 @@ class Float:
 def test():
     a = Float(1.0)
     b = Float(1)
+    c = Float(-1)
+    d = Float(-1.0)
     test_dict = {
         "a": [a],
         "b": [b],
