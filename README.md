@@ -17,5 +17,5 @@ TODO
 
 TODO
 
-##Specific Implementation Choices and Assumptions
+## Specific Implementation Choices and Assumptions
 Values decay after being read so the first read is always the original value.
