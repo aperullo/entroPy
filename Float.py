@@ -1,4 +1,5 @@
 from random import random
+from math import trunc, floor, ceil
 
 MUTATION_RATE = 0.05
 
@@ -35,7 +36,93 @@ class Float:
     def __repr__(self):
         return self.val.__repr__()
 
-    #TODO add overrides for math ops
+    #overrides for math ops
+
+    def __eq__(self, other):
+        return self.val == other.val #self._val == other._val which is better? One has the side effect of mutating the values. Everytime you use a value it should change, that's the assumption of the language.
+
+    def __ne__(self, other):
+        return self.val != other.val
+
+    def __lt__(self, other):
+        return self.val < other.val
+
+    def __gt__(self, other):
+        return self.val > other.val
+
+    def __le__(self, other):
+        return self.val <= other.val
+
+    def __ge__(self, other):
+        return self.val >= other.val
+
+    def __add__(self, other):
+        return Float(self.val + other.val)
+
+    def __sub__(self, other):
+        return Float(self.val - other.val)
+
+    def __mul__(self, other):
+        return Float(self.val * other.val)
+
+    def __truediv__(self, other):
+        return Float(self.val / other.val)
+
+    def __floordiv__(self, other):
+        return Float(self.val // other.val)
+
+    def __mod__(self, other):
+        return Float(self.val % other.val)
+
+    def __divmod__(self, other):
+        return Float(divmod(self.val, other.val))
+
+    def __pow__(self, other):
+        return Float(pow(self.val, other.val))
+
+    def __iadd__(self, other):
+        return Float(self.val + other.val)
+
+    def __isub__(self, other):
+        return Float(self.val - other.val)
+
+    def __imul__(self, other):
+        return Float(self.val * other.val)
+
+    def __itruediv__(self, other):
+        return Float(self.val / other.val)
+
+    def __ifloordiv__(self, other):
+        return Float(self.val // other.val)
+
+    def __imod__(self, other):
+        return Float(self.val % other.val)
+
+    def __ipow__(self, other):
+        return Float(pow(self.val, other.val))
+
+    def __neg__(self):
+        return Float(-self.val)
+
+    def __pos__(self):
+        return Float(+self.val)
+
+    def __abs__(self):
+        return Float(abs(self.val))
+
+    def __invert__(self):
+        return Float(~self.val)
+
+    def __round__(self, n=None):
+        return Float(round(self.val, n))
+
+    def __trunc__(self):
+        return Float(trunc(self.val))
+    def __floor__(self):
+        return Float(floor(self.val))
+
+    def __ceil__(self):
+        return Float(ceil(self.val))
 
 def test():
     a = Float(1.0)
@@ -58,4 +145,4 @@ def test():
     for key in test_dict.keys():
         print(key, test_dict[key])
 
-test()
+#test()
