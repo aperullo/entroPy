@@ -37,6 +37,7 @@ class Float:
         return self.val.__repr__()
 
     #overrides for math ops
+    #Todo: Test the math ops
 
     def __eq__(self, other):
         return Boolean(self.val == other.val) #self._val == other._val which is better? One has the side effect of mutating the values. Everytime you use a value it should change, that's the assumption of the language.

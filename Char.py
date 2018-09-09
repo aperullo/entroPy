@@ -1,4 +1,5 @@
 from random import random
+from Boolean import Boolean
 
 MUTATION_RATE = 0.004
 LOWER_BOUND = 32 #" " in ascii
@@ -51,6 +52,9 @@ class Char:
         return chr(self.val).__repr__()
 
     #TODO add overrides for comparisons
+
+    def __eq__(self, other):
+        return Boolean(self.val == other.val)
 
 def test():
     a = Char("a")

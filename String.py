@@ -2,7 +2,8 @@ from Char import Char
 
 # A convenience class to make using entroPy chars less painful
 # Strings shall be immutable.
-#TODO: redefine string methods for these
+#TODO: redefine string methods for these.
+#TODO: Including getters for selecting by index. String class is fairly useless currently
 class String:
 
     _chars = ()
@@ -21,6 +22,13 @@ class String:
     #
     # def __repr__(self):
     #     return self._chars.__repr__()
+
+    def __len__(self):
+        len(self._chars)
+
+    def __eq__(self, other):
+        for x in range(max(len(self), len(other))):
+           pass
 
 
 def test():

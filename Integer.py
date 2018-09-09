@@ -41,7 +41,8 @@ class Integer:
     def __repr__(self):
         return int(self.val).__repr__()
 
-    # overrides for math ops
+    #overrides for math ops
+    #Todo: Test the math ops
 
     def __eq__(self, other):
         return Boolean(self.val == other.val)  # self._val == other._val which is better? One has the side effect of mutating the values. Everytime you use a value it should change, that's the assumption of the language.
@@ -100,7 +101,7 @@ class Integer:
     # truediv produces a float, //= does not, following python's int logic.
     #TODO: TEST that this replaces the variable with a float.
     def __itruediv__(self, other):
-        return float(self._val / other.val)
+        return Float(self._val / other.val)
 
     def __ifloordiv__(self, other):
         self._val //= other.val
