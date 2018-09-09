@@ -1,7 +1,8 @@
 from Char import Char
 
 # A convenience class to make using entroPy chars less painful
-# Strings shall me immutable. TODO: make everything immutable other than by decay? Basically remove setters and make math ops class methods
+# Strings shall be immutable.
+#TODO: redefine string methods for these
 class String:
 
     _chars = ()
@@ -20,3 +21,11 @@ class String:
     #
     # def __repr__(self):
     #     return self._chars.__repr__()
+
+
+def test():
+    a = String("bottles of beer on the wall.")
+    for x in range(99):
+        print(x,a)
+
+test()

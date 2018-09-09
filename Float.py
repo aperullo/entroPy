@@ -1,6 +1,6 @@
 from random import random
 
-MUTATION_RATE = 0.03
+MUTATION_RATE = 0.05
 
 #A mutating floating point number.
 class Float:
@@ -41,7 +41,7 @@ def test():
     a = Float(1.0)
     b = Float(1)
     c = Float(-1)
-    d = Float(-1.0)
+    d = Float(100)
     test_dict = {
         "a": [a],
         "b": [b],
@@ -49,7 +49,7 @@ def test():
         "d": [d]
     }
 
-    for x in range(10):
+    for x in range(100):
         test_dict["a"].append(a)
         test_dict["b"].append(b)
         test_dict["c"].append(c)
