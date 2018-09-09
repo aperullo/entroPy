@@ -1,4 +1,5 @@
 from random import random
+import Integer
 
 MUTATION_RATE = 0.5 #50/50 odds of being false or true
 
@@ -36,7 +37,48 @@ class Boolean:
     def __repr__(self):
         return chr(self.val).__repr__()
 
-    #TODO add overrides for comparisons
+    #overrides for comparisons
+
+    #determines truthiness of a class
+
+    def __bool__(self):
+        return self.val
+
+    def __eq__(self, other):
+        return Boolean(self.val == other.val)
+
+    def __ne__(self, other):
+        return Boolean(self.val != other.val)
+
+    def __lshift__(self, other):
+        return Integer(self.val << other.val)
+
+    def __rshift__(self, other):
+        return Integer(self.val >> other.val)
+
+    def __and__(self, other):
+        return Boolean(self.val & other.val)
+
+    def __xor__(self, other):
+        return Boolean(self.val ^ other.val)
+
+    def __or__(self, other):
+        return Boolean(self.val | other.val)
+
+    def __ilshift__(self, other):
+        return Integer(self.val << other.val)
+
+    def __irshift__(self, other):
+        return Integer(self.val >> other.val)
+
+    def __iand__(self, other):
+        return Boolean(self.val & other.val)
+
+    def __ixor__(self, other):
+        return Boolean(self.val ^ other.val)
+
+    def __ior__(self, other):
+        return Boolean(self.val | other.val)
 
 def test():
     a = Boolean(False)

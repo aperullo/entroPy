@@ -1,5 +1,7 @@
 from random import random
 from math import trunc, floor, ceil
+from Integer import Integer
+from Boolean import Boolean
 
 MUTATION_RATE = 0.05
 
@@ -11,14 +13,12 @@ class Float:
     def __init__(self, value):
         self._val = value
 
-    #properties only to be used externally because otherwise recursive reference to mutate
     @property
     def val(self):
         temp = self._val
         self.__mutate()
         return temp
 
-    #properties only to be used externally because otherwise recursive reference to mutate
     @val.setter
     def val(self, value):
         self._val = value
@@ -39,22 +39,22 @@ class Float:
     #overrides for math ops
 
     def __eq__(self, other):
-        return self.val == other.val #self._val == other._val which is better? One has the side effect of mutating the values. Everytime you use a value it should change, that's the assumption of the language.
+        return Boolean(self.val == other.val) #self._val == other._val which is better? One has the side effect of mutating the values. Everytime you use a value it should change, that's the assumption of the language.
 
     def __ne__(self, other):
-        return self.val != other.val
+        return Boolean(self.val != other.val)
 
     def __lt__(self, other):
-        return self.val < other.val
+        return Boolean(self.val < other.val)
 
     def __gt__(self, other):
-        return self.val > other.val
+        return Boolean(self.val > other.val)
 
     def __le__(self, other):
-        return self.val <= other.val
+        return Boolean(self.val <= other.val)
 
     def __ge__(self, other):
-        return self.val >= other.val
+        return Boolean(self.val >= other.val)
 
     def __add__(self, other):
         return Float(self.val + other.val)
@@ -69,7 +69,7 @@ class Float:
         return Float(self.val / other.val)
 
     def __floordiv__(self, other):
-        return Float(self.val // other.val)
+        return Integer(self.val // other.val)
 
     def __mod__(self, other):
         return Float(self.val % other.val)
@@ -81,25 +81,33 @@ class Float:
         return Float(pow(self.val, other.val))
 
     def __iadd__(self, other):
-        return Float(self.val + other.val)
+        self._val += other.val
+        return self
 
     def __isub__(self, other):
-        return Float(self.val - other.val)
+        self._val - other.val
+        return self
 
     def __imul__(self, other):
-        return Float(self.val * other.val)
+        self._val *= other.val
+        return self
 
     def __itruediv__(self, other):
-        return Float(self.val / other.val)
+        self._val /= other.val
+        return self
 
+    #floordiv produces an integer, //= does not, following python's float logic.
     def __ifloordiv__(self, other):
-        return Float(self.val // other.val)
+        self._val //= other.val
+        return self
 
     def __imod__(self, other):
-        return Float(self.val % other.val)
+        self._val %= other.val
+        return self
 
     def __ipow__(self, other):
-        return Float(pow(self.val, other.val))
+        self._val = pow(self._val,other.val)
+        return self
 
     def __neg__(self):
         return Float(-self.val)

@@ -1,4 +1,7 @@
 from random import random, randint
+from math import trunc, floor, ceil
+from Float import Float
+from Boolean import Boolean
 
 #mutates roughly by 1 on average
 #TODO: not super happy with these, they don't decay far enough from their starting value fast enough, but I can't multiply by their own value because then all ints would become stable at 0.
@@ -38,7 +41,102 @@ class Integer:
     def __repr__(self):
         return int(self.val).__repr__()
 
-    #TODO add overrides for comparisons
+    # overrides for math ops
+
+    def __eq__(self, other):
+        return Boolean(self.val == other.val)  # self._val == other._val which is better? One has the side effect of mutating the values. Everytime you use a value it should change, that's the assumption of the language.
+
+    def __ne__(self, other):
+        return Boolean(self.val != other.val)
+
+    def __lt__(self, other):
+        return Boolean(self.val < other.val)
+
+    def __gt__(self, other):
+        return Boolean(self.val > other.val)
+
+    def __le__(self, other):
+        return Boolean(self.val <= other.val)
+
+    def __ge__(self, other):
+        return Boolean(self.val >= other.val)
+
+    def __add__(self, other):
+        return Integer(self.val + other.val)
+
+    def __sub__(self, other):
+        return Integer(self.val - other.val)
+
+    def __mul__(self, other):
+        return Integer(self.val * other.val)
+
+    def __truediv__(self, other):
+        return Float(self.val / other.val)
+
+    def __floordiv__(self, other):
+        return Integer(self.val // other.val)
+
+    def __mod__(self, other):
+        return Integer(self.val % other.val)
+
+    def __divmod__(self, other):
+        return Integer(divmod(self.val, other.val))
+
+    def __pow__(self, other):
+        return Integer(pow(self.val, other.val))
+
+    def __iadd__(self, other):
+        self._val += other.val
+        return self
+
+    def __isub__(self, other):
+        self._val - other.val
+        return self
+
+    def __imul__(self, other):
+        self._val *= other.val
+        return self
+
+    # truediv produces a float, //= does not, following python's int logic.
+    #TODO: TEST that this replaces the variable with a float.
+    def __itruediv__(self, other):
+        return float(self._val / other.val)
+
+    def __ifloordiv__(self, other):
+        self._val //= other.val
+        return self
+
+    def __imod__(self, other):
+        self._val %= other.val
+        return self
+
+    def __ipow__(self, other):
+        self._val = pow(self._val,other.val)
+        return self
+
+    def __neg__(self):
+        return Integer(-self.val)
+
+    def __pos__(self):
+        return Integer(+self.val)
+
+    def __abs__(self):
+        return Integer(abs(self.val))
+
+    def __invert__(self):
+        return Integer(~self.val)
+
+    def __round__(self, n=None):
+        return Integer(round(self.val, n))
+
+    def __trunc__(self):
+        return Integer(trunc(self.val))
+
+    def __floor__(self):
+        return Integer(floor(self.val))
+
+    def __ceil__(self):
+        return Integer(ceil(self.val))
 
 def test():
     a = Integer(1)
