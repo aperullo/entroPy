@@ -1,4 +1,5 @@
 # entroPy
+What if Python couldn't remember the script?
 
 entroPy is a collection of types and an interpreter for python based loosely on the
 entropy esolang, where values of variables decay as they are used. This is not an
