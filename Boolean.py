@@ -1,12 +1,14 @@
 from random import random
-from Integer import Integer
-from Float import Float
+# from Integer import Integer
+# from Float import Float
+import Integer
+import Float
+import Settings
 
-MUTATION_RATE = 0.5 #50/50 odds of being false or true
+MUTATION_RATE = Settings.get_mutation_rate("Boolean")
 
 #A mutating true/false.
-#TODO: currently only supports a subset of the ascii character set. 32-126 or " " to "~".
-#TODO: In the future instead of clamping so values can get stuck after they decay to either side, maybe use a modulo type operation to connect the lower and upper bound in a loop
+#TODO: This class may become deprecated. Makes many programs too unstable.
 class Boolean:
 
     _val = False
@@ -29,7 +31,8 @@ class Boolean:
 
     #mutates the value of this variable
     def __mutate(self):
-        self._val = random() < MUTATION_RATE #randomly be true or false
+        self._val = (not self._val) if (random() <= MUTATION_RATE) else self._val  #Mutation_rate represents the chance to mutate where 0 is never and 1 is can mutate everytime.
+
 
     # uncomment these after testing
     def __str__(self):
@@ -38,102 +41,107 @@ class Boolean:
     def __repr__(self):
         return self.val.__repr__()
 
-    #overrides for comparisons
-
-    #determines truthiness of a class
-    #I know the == True is redundant, but it might make the ifuncs behave if self._val ends up becoming an integer instead
+    # This method allow the entropy type to imitate its primitive counterpart in most situations.
+    # Some functions will try running the bool function to determine the objects "truthiness".
     def __bool__(self):
+        # I know the == True is redundant, but it might make the ifuncs behave if self._val ends up becoming an integer instead
         return self.val == True
 
+
+    # Comparison ops. These used to return entropy booleans but that ended up causing while loops to just simply stop with no visible explanation.
+    # For the sake of making the language usable, entropy booleans will probably end up confined to only user made booleans, or just be removed entirely.
     def __eq__(self, other):
-        return Boolean(self.val == other.val)
+        return self.__bool__() == other.__bool__()
 
     def __ne__(self, other):
-        return Boolean(self.val != other.val)
+        return self.__bool__() != other.__bool__()
 
     def __lshift__(self, other):
-        return Integer(self.val << other.val)
+        return Integer.Integer(self.val << other.val)
 
     def __rshift__(self, other):
-        return Integer(self.val >> other.val)
+        return Integer.Integer(self.val >> other.val)
 
     def __and__(self, other):
-        return Boolean(self.val & other.val)
+        return self.__bool__() & other.__bool__()
 
     def __xor__(self, other):
-        return Boolean(self.val ^ other.val)
+        return self.__bool__() ^ other.__bool__()
 
     def __or__(self, other):
-        return Boolean(self.val | other.val)
+        return self.__bool__() | other.__bool__()
 
     def __ilshift__(self, other):
-        return Integer(self.val << other.val)
+        return Integer.Integer(self.val << other.val)
 
     def __irshift__(self, other):
-        return Integer(self.val >> other.val)
+        return Integer.Integer(self.val >> other.val)
 
     def __iand__(self, other):
-        return Boolean(self.val & other.val)
+        self._val = self & other
+        return self
 
     def __ixor__(self, other):
-        return Boolean(self.val ^ other.val)
+        self._val = self ^ other
+        return self
 
     def __ior__(self, other):
-        return Boolean(self.val | other.val)
+        self._val = self | other
+        return self
 
     #You can do math with booleans because they are just 0 and 1, so we need to implement that math methods too.
-
     def __add__(self, other):
-        return Integer(self.val + other.val)
+        return Integer.Integer(self.val + other.val)
 
     def __sub__(self, other):
-        return Integer(self.val - other.val)
+        return Integer.Integer(self.val - other.val)
 
     def __mul__(self, other):
-        return Integer(self.val * other.val)
+        return Integer.Integer(self.val * other.val)
 
     def __truediv__(self, other):
-        return Float(self.val / other.val)
+        return Float.Float(self.val / other.val)
 
     def __floordiv__(self, other):
-        return Integer(self.val // other.val)
+        return Integer.Integer(self.val // other.val)
 
     def __mod__(self, other):
-        return Integer(self.val % other.val)
+        return Integer.Integer(self.val % other.val)
 
     def __divmod__(self, other):
-        return Integer(divmod(self.val, other.val))
+        return Integer.Integer(divmod(self.val, other.val))
 
     def __pow__(self, other):
-        return Integer(pow(self.val, other.val))
+        return Integer.Integer(pow(self.val, other.val))
 
-    # TODO: TEST that this replaces the variables with an Integer.
+    #todo: should these i methods be allowed to turn the _val into an integer? Probably.
     def __iadd__(self, other):
-        return Integer(self._val + other.val)
+        return Integer.Integer(self._val + other.val)
 
     def __isub__(self, other):
-        return Integer(self._val - other.val)
+        return Integer.Integer(self._val - other.val)
 
     def __imul__(self, other):
-        return Integer(self._val * other.val)
+        return Integer.Integer(self._val * other.val)
 
     # truediv produces a float, //= does not, following python's int logic.
     def __itruediv__(self, other):
-        return Float(self._val / other.val)
+        return Float.Float(self._val / other.val)
 
     def __ifloordiv__(self, other):
-        return Integer(self._val // other.val)
+        return Integer.Integer(self._val // other.val)
 
     def __imod__(self, other):
-        return Integer(self._val % other.val)
+        return Integer.Integer(self._val % other.val)
 
     def __ipow__(self, other):
-        return Integer(pow(self._val,other.val))
+        return Integer.Integer(pow(self._val,other.val))
+
 
 def test():
     a = Boolean(False)
     true, false = 0, 0
-    for x in range(1000):
+    for x in range(100000):
         if a:
             true += 1
         else:

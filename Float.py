@@ -1,9 +1,9 @@
 from random import random
 from math import trunc, floor, ceil
-from Integer import Integer
-from Boolean import Boolean
+import Integer
+import Settings
 
-MUTATION_RATE = 0.05
+MUTATION_RATE = Settings.get_mutation_rate("Float")
 
 #A mutating floating point number.
 class Float:
@@ -23,40 +23,56 @@ class Float:
     def val(self, value):
         self._val = value
 
-    #mutates the value of this variable
+    # mutates the value of this variable
     def __mutate(self):
-        #random number between 0 and 1 is scaled down by the mutation rate and then scaled again by the value itself
+        # random number between 0 and 1 is scaled down by the mutation rate and then scaled again by the value itself
         mutate_val = self._val * MUTATION_RATE * random()
         self._val = self._val + (mutate_val if random() < 0.5 else -mutate_val) #randomly add or subtract
 
-    # uncomment these after testing
+
+    # String and printing
     def __str__(self):
         return self.val.__str__()
 
     def __repr__(self):
         return self.val.__repr__()
 
-    #overrides for math ops
-    #Todo: Test the math ops
 
+    # These methods allow entropy types to imitate their primitive counterparts in most situations.
+    # Some functions will try running the int or index function on an object to see if it can be duck typed to acting as an int.
+    def __index__(self):
+        return int(self.val)
+
+    def __int__(self):
+        return int(self.val)
+
+    def __float__(self):
+        return self.val
+
+
+    # Comparison ops. These used to return entropy booleans but that ended up causing while loops to just simply stop with no visible explanation.
+    # For the sake of making the language usable, entropy booleans will probably end up confined to only user made booleans, or just be removed entirely.
     def __eq__(self, other):
-        return Boolean(self.val == other.val) #self._val == other._val which is better? One has the side effect of mutating the values. Everytime you use a value it should change, that's the assumption of the language.
+        return self.val == other.val    #call self.val. Everytime you use a value it should change, that's the assumption of the language.
 
     def __ne__(self, other):
-        return Boolean(self.val != other.val)
+        return self.val != other.val
 
     def __lt__(self, other):
-        return Boolean(self.val < other.val)
+        return self.val < other.val
 
     def __gt__(self, other):
-        return Boolean(self.val > other.val)
+        return self.val > other.val
 
     def __le__(self, other):
-        return Boolean(self.val <= other.val)
+        return self.val <= other.val
 
     def __ge__(self, other):
-        return Boolean(self.val >= other.val)
+        return self.val >= other.val
 
+
+    # Math ops overrides. These persist the type by making the result an entropy type.
+    # Todo: Test the math ops
     def __add__(self, other):
         return Float(self.val + other.val)
 
@@ -70,7 +86,7 @@ class Float:
         return Float(self.val / other.val)
 
     def __floordiv__(self, other):
-        return Integer(self.val // other.val)
+        return Integer.Integer(self.val // other.val)
 
     def __mod__(self, other):
         return Float(self.val % other.val)
@@ -86,7 +102,7 @@ class Float:
         return self
 
     def __isub__(self, other):
-        self._val - other.val
+        self._val -= other.val
         return self
 
     def __imul__(self, other):
@@ -127,11 +143,13 @@ class Float:
 
     def __trunc__(self):
         return Float(trunc(self.val))
+
     def __floor__(self):
         return Float(floor(self.val))
 
     def __ceil__(self):
         return Float(ceil(self.val))
+
 
 def test():
     a = Float(1.0)

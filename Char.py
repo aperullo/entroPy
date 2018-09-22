@@ -1,11 +1,12 @@
 from random import random
-from Boolean import Boolean
+import String
+import Settings
 
-MUTATION_RATE = 0.004
+MUTATION_RATE = Settings.get_mutation_rate("Char")
 LOWER_BOUND = 32 #" " in ascii
 UPPER_BOUND = 126 #"~" in ascii
 
-#A mutating single character. Represented internally by a float whose value gets rounded off when read.
+#A mutating single character. Represented internally by an int whose value represents a char in ascii
 #TODO: currently only supports a subset of the ascii character set. 32-126 or " " to "~".
 #TODO: In the future instead of clamping so values can get stuck after they decay to either side, maybe use a modulo type operation to connect the lower and upper bound in a loop
 class Char:
@@ -44,19 +45,26 @@ class Char:
         mutate_val = self._val * MUTATION_RATE * random()
         self._val = self._val + (mutate_val if random() < 0.5 else -mutate_val) #randomly add or subtract
 
-    # uncomment these after testing
+
+    # String and printing
     def __str__(self):
         return chr(self.val).__str__()
 
     def __repr__(self):
         return chr(self.val).__repr__()
 
-    #TODO add overrides for comparisons
 
+    # TODO add overrides for comparisons
+    # Comparison ops. These used to return entropy booleans but that ended up causing while loops to just simply stop with no visible explanation.
+    # For the sake of making the language usable, entropy booleans will probably end up confined to only user made booleans, or just be removed entirely.
     def __eq__(self, other):
-        return Boolean(self.val == other.val)
+        return self.val == other.val
+
+    def __add__(self, other):
+        return String.String(self.__str__() + other.__str__())
 
 def test():
+
     a = Char("a")
     b = Char("0")
     c = Char(' ')

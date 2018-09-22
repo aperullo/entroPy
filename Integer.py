@@ -1,11 +1,10 @@
-from random import random, randint
+from random import random, randint, uniform
 from math import trunc, floor, ceil
-from Float import Float
-from Boolean import Boolean
+import Float
+import Settings
 
-#mutates roughly by 1 on average
-#TODO: not super happy with these, they don't decay far enough from their starting value fast enough, but I can't multiply by their own value because then all ints would become stable at 0.
-MUTATION_RATE = 10
+
+MUTATION_RATE = Settings.get_mutation_rate("Integer")
 
 #A mutating whole number. Represented internally by a integer whose value changes by MUTATION_RATE / 2 on average.
 class Integer:
@@ -15,53 +14,70 @@ class Integer:
     def __init__(self, value):
         self._val = int(value)
 
-    #properties only to be used externally because otherwise recursive reference to mutate
     @property
     def val(self):
-        temp = self._val #want the original value to show up atleast once before decay
+        temp = self._val # want the original value to show up atleast once before decay
         self.__mutate()
         return int(temp)
 
-    #properties only to be used externally because otherwise recursive reference to mutate
     @val.setter
     def val(self, value):
         self._val = int(value)
 
-    #mutates the value of this variable
+    # mutates the value of this variable
     def __mutate(self):
-        #random number between 0 and 1 is scaled down by the mutation rate.
-        #Ints would be stable at 0 because 0*anything is 0. This way there is no stable value to decay to.
-        mutate_val = randint(0, MUTATION_RATE)
+        # Random number between 1 and MUTATION_RATE * the magnitude of the value itself.
+        # If Mutation rate is 1 then there is stability at 1 and all numbers will hover around 1 on average, but may fluctuate to higher values.
+        # If Mutation rate is higher (ie 2), then numbers change by twice their value on average leading to exponential fluctuations.
+        # It can still settle at 1 or 0, but it is much easier for it to escape from that stable place.
+        # This finally achieves the behavior I want.
+
+        mutate_val = uniform(1, MUTATION_RATE * abs(self._val) if abs(self._val) >= 1 else 1)  #multiply by the magnitude of the value or atleast by 1.
         self._val = self._val + (mutate_val if random() < 0.5 else -mutate_val) #randomly add or subtract
 
-    # uncomment these after testing
+
+    # String and printing
     def __str__(self):
         return int(self.val).__str__()
 
     def __repr__(self):
         return int(self.val).__repr__()
 
-    #overrides for math ops
-    #Todo: Test the math ops
 
+    # These methods allow entropy types to imitate their primitive counterparts in most situations.
+    # Some functions will try running the int or index function on an object to see if it can be duck typed to acting as an int.
+    def __int__(self):
+        return int(self.val)
+
+    def __float__(self):
+        return self.val
+
+    def __index__(self):
+        return int(self.val)
+
+
+    # Comparison ops. These used to return entropy booleans but that ended up causing while loops to just simply stop with no visible explanation.
+    # For the sake of making the language usable, entropy booleans will probably end up confined to only user made booleans, or just be removed entirely.
     def __eq__(self, other):
-        return Boolean(self.val == other.val)  # self._val == other._val which is better? One has the side effect of mutating the values. Everytime you use a value it should change, that's the assumption of the language.
+        return self.val == other.val
 
     def __ne__(self, other):
-        return Boolean(self.val != other.val)
+        return self.val != other.val
 
     def __lt__(self, other):
-        return Boolean(self.val < other.val)
+        return self.val < other.val
 
     def __gt__(self, other):
-        return Boolean(self.val > other.val)
+        return self.val > other.val
 
     def __le__(self, other):
-        return Boolean(self.val <= other.val)
+        return self.val <= other.val
 
     def __ge__(self, other):
-        return Boolean(self.val >= other.val)
+        return self.val >= other.val
 
+    # Math ops overrides. These persist the type by making the result an entropy type.
+    # Todo: Test the math ops
     def __add__(self, other):
         return Integer(self.val + other.val)
 
@@ -72,7 +88,7 @@ class Integer:
         return Integer(self.val * other.val)
 
     def __truediv__(self, other):
-        return Float(self.val / other.val)
+        return Float.Float(self.val / other.val)
 
     def __floordiv__(self, other):
         return Integer(self.val // other.val)
@@ -91,7 +107,7 @@ class Integer:
         return self
 
     def __isub__(self, other):
-        self._val - other.val
+        self._val -= other.val
         return self
 
     def __imul__(self, other):
@@ -101,7 +117,7 @@ class Integer:
     # truediv produces a float, //= does not, following python's int logic.
     #TODO: TEST that this replaces the variable with a float.
     def __itruediv__(self, other):
-        return Float(self._val / other.val)
+        return Float.Float(self._val / other.val)
 
     def __ifloordiv__(self, other):
         self._val //= other.val
@@ -139,6 +155,7 @@ class Integer:
     def __ceil__(self):
         return Integer(ceil(self.val))
 
+
 def test():
     a = Integer(1)
     b = Integer(0)
@@ -152,7 +169,7 @@ def test():
         "d": [d]
     }
 
-    for x in range(10):
+    for x in range(50):
         test_dict["a"].append(a)
         test_dict["b"].append(b)
         test_dict["c"].append(c)
