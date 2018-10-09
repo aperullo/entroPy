@@ -4,15 +4,15 @@ import Float
 import Settings
 
 
-MUTATION_RATE = Settings.get_mutation_rate("Integer")
+#MUTATION_RATE = Settings.get_mutation_rate("Integer")
 
-#A mutating whole number. Represented internally by a integer whose value changes by MUTATION_RATE / 2 on average.
+#A mutating whole number. Represented internally by a float whose value get rounded off.
 class Integer:
 
-    _val = 0
+    _val = 0.0
 
     def __init__(self, value):
-        self._val = int(value)
+        self._val = round(value, 0) #round the incoming number to 0 decimal palces.
 
     @property
     def val(self):
@@ -22,9 +22,10 @@ class Integer:
 
     @val.setter
     def val(self, value):
-        self._val = int(value)
+        self._val = float(round(value, 0)) #val always needs to be a float.
 
     # mutates the value of this variable
+    # TODO Rebuild integer mutate so that it mutates the same as float
     def __mutate(self):
         # Random number between 1 and MUTATION_RATE * the magnitude of the value itself.
         # If Mutation rate is 1 then there is stability at 1 and all numbers will hover around 1 on average, but may fluctuate to higher values.
@@ -32,8 +33,12 @@ class Integer:
         # It can still settle at 1 or 0, but it is much easier for it to escape from that stable place.
         # This finally achieves the behavior I want.
 
-        mutate_val = uniform(1, MUTATION_RATE * abs(self._val) if abs(self._val) >= 1 else 1)  #multiply by the magnitude of the value or atleast by 1.
-        self._val = self._val + (mutate_val if random() < 0.5 else -mutate_val) #randomly add or subtract
+        # mutate_val = uniform(1.0, Settings.get_mutation_rate("Integer") * abs(self._val) if abs(self._val) >= 1 else 1.0)  #multiply by the magnitude of the value or atleast by 1.
+        # self._val = self._val + (mutate_val if random() < 0.5 else -mutate_val) #randomly add or subtract
+        MUTATION_RATE = Settings.get_mutation_rate("Integer")
+        mutate_val = uniform(1.0, abs(self._val) if abs(self._val) >= 1 else 1.0)  #multiply by the magnitude of the value or atleast by 1.
+        mutate_val *= MUTATION_RATE
+        self._val = self._val + (mutate_val if random() < 0.5 else -mutate_val)  # randomly add or subtract
 
 
     # String and printing
@@ -41,94 +46,128 @@ class Integer:
         return int(self.val).__str__()
 
     def __repr__(self):
-        return int(self.val).__repr__()
+        # return int(self.val).__str__()
+        return "Integer(_val=" + self._val.__repr__() + ")"
 
 
     # These methods allow entropy types to imitate their primitive counterparts in most situations.
     # Some functions will try running the int or index function on an object to see if it can be duck typed to acting as an int.
+    def __index__(self):
+        return int(self.val)
+
     def __int__(self):
         return int(self.val)
 
     def __float__(self):
-        return self.val
-
-    def __index__(self):
-        return int(self.val)
-
+        return float(round(self.val, 0)) #val always needs to be a float.
 
     # Comparison ops. These used to return entropy booleans but that ended up causing while loops to just simply stop with no visible explanation.
     # For the sake of making the language usable, entropy booleans will probably end up confined to only user made booleans, or just be removed entirely.
     def __eq__(self, other):
-        return self.val == other.val
+        return self.val == float(other)
 
     def __ne__(self, other):
-        return self.val != other.val
+        return self.val != float(other)
 
     def __lt__(self, other):
-        return self.val < other.val
+        return self.val < float(other)
 
     def __gt__(self, other):
-        return self.val > other.val
+        return self.val > float(other)
 
     def __le__(self, other):
-        return self.val <= other.val
+        return self.val <= float(other)
 
     def __ge__(self, other):
-        return self.val >= other.val
+        return self.val >= float(other)
 
     # Math ops overrides. These persist the type by making the result an entropy type.
     # Todo: Test the math ops
     def __add__(self, other):
-        return Integer(self.val + other.val)
+        return Integer(self.val + float(other))
 
-    def __sub__(self, other):
-        return Integer(self.val - other.val)
-
-    def __mul__(self, other):
-        return Integer(self.val * other.val)
-
-    def __truediv__(self, other):
-        return Float.Float(self.val / other.val)
-
-    def __floordiv__(self, other):
-        return Integer(self.val // other.val)
-
-    def __mod__(self, other):
-        return Integer(self.val % other.val)
-
-    def __divmod__(self, other):
-        return Integer(divmod(self.val, other.val))
-
-    def __pow__(self, other):
-        return Integer(pow(self.val, other.val))
+    def __radd__(self, other):
+        return Integer(self.val + float(other))
 
     def __iadd__(self, other):
-        self._val += other.val
+        self._val += float(other)
+        self.__mutate()
         return self
+
+    def __sub__(self, other):
+        return Integer(self.val - float(other))
+
+    def __rsub__(self, other):
+        return Integer(float(other) - self.val)
 
     def __isub__(self, other):
-        self._val -= other.val
+        self._val -= float(other)
+        self.__mutate()
         return self
+
+    def __mul__(self, other):
+        return Integer(self.val * float(other))
+
+    def __rmul__(self, other):
+        return Integer(self.val * float(other))
 
     def __imul__(self, other):
-        self._val *= other.val
+        self._val *= float(other)
+        self.__mutate()
         return self
+
+    def __truediv__(self, other):
+        return Float.Float(self.val / float(other))
+
+    def __rtruediv__(self, other):
+        return Float.Float(float(other) / self.val)
+
+    def __itruediv__(self, other):
+        self.__mutate()
+        return Float.Float(self._val / float(other))
+
+    def __floordiv__(self, other):
+        return Integer(self.val // float(other))
+
+    def __rfloordiv__(self, other):
+        return Integer(float(other) // self.val)
 
     # truediv produces a float, //= does not, following python's int logic.
-    #TODO: TEST that this replaces the variable with a float.
-    def __itruediv__(self, other):
-        return Float.Float(self._val / other.val)
-
     def __ifloordiv__(self, other):
-        self._val //= other.val
+        self._val //= float(other)
+        self.__mutate()
         return self
+
+    def __mod__(self, other):
+        return Integer(self.val % float(other))
+
+    def __rmod__(self, other):
+        return Integer(float(other) % self.val)
 
     def __imod__(self, other):
-        self._val %= other.val
+        self._val %= float(other)
+        self.__mutate()
         return self
 
+    def __divmod__(self, other):
+        return "NOT IMPLEMENTED YET"
+        #return Integer(divmod(self.val, float(other)))
+
+    def __divmod__(self, other):
+        return tuple(map(Integer, divmod(self.val, float(other)))) # for both of the things in the tuple, run the float constructor over them.
+
+    def __rdivmod__(self, other):
+        return tuple(map(Integer, divmod(float(other), self.val))) # for both of the things in the tuple, run the float constructor over them.
+
+    def __pow__(self, other):
+        return Integer(pow(self.val, float(other)))
+
+    def __rpow__(self, other):
+        return Integer(pow(float(other), self.val))
+
     def __ipow__(self, other):
-        self._val = pow(self._val,other.val)
+        self._val = pow(self._val, float(other))
+        self.__mutate()
         return self
 
     def __neg__(self):

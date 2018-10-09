@@ -24,9 +24,19 @@ class entTransformer(ast.NodeTransformer):
 
         #TODO: can probably shorten this down to just a line with a ternary in the ID
         if isinstance(node.n, float):  # if node value is a float, call the Float constructor over it.
-            return ast.Call(func=ast.Name(id='Float', ctx=ast.Load()), args=[ast.Num(n=node.n)], keywords=[])
+            return ast.Call(
+                func=ast.Name(
+                    id='Float',
+                    ctx=ast.Load()),
+                args=[ast.Num(n=node.n)],
+                keywords=[])
         elif isinstance(node.n, int):  # if node value is a int, call the Integer constructor over it.
-            return ast.Call(func=ast.Name(id='Integer', ctx=ast.Load()), args=[ast.Num(n=node.n)], keywords=[])
+            return ast.Call(
+                func=ast.Name(
+                    id='Integer',
+                    ctx=ast.Load()),
+                args=[ast.Num(n=node.n)],
+                keywords=[])
         else:  # if node value was somehow neither, don't touch it
             return node
 
@@ -38,7 +48,12 @@ class entTransformer(ast.NodeTransformer):
         # print(type(node.s))
 
         if isinstance(node.s, str): # if node value is a str, call the String constructor over it.
-            return ast.Call(func=ast.Name(id='String', ctx=ast.Load()), args=[ast.Str(s=node.s)], keywords=[])
+            return ast.Call(
+                func=ast.Name(
+                    id='String',
+                    ctx=ast.Load()),
+                args=[ast.Str(s=node.s)],
+                keywords=[])
         else:  # if node value was somehow not a str, don't touch it
             return node
 
@@ -50,7 +65,12 @@ class entTransformer(ast.NodeTransformer):
         # print(type(node.value))
 
         if isinstance(node.value, bool): # if node value is a bool, call the Boolean constructor over it.
-            return ast.Call(func=ast.Name(id='Boolean', ctx=ast.Load()), args=[ast.NameConstant(value=node.value)], keywords=[])
+            return ast.Call(
+                func=ast.Name(
+                    id='Boolean',
+                    ctx=ast.Load()),
+                args=[ast.NameConstant(value=node.value)],
+                keywords=[])
         else:  # if node value was not a bool (IE was NoneType), don't touch it.
             return node
 
@@ -66,7 +86,12 @@ class entTransformer(ast.NodeTransformer):
             isinstance(node.func.id, str) and       # and if the id of that name is a str (sanity check)
             node.func.id == "len"):                 # and if the id of that name is len (builtin len())
 
-            return ast.Call(func=ast.Name(id='Integer', ctx=ast.Load()), args=[node], keywords=[])  #Wrap the node itself in an Integer call
+            return ast.Call(
+                func=ast.Name(
+                    id='Integer',
+                    ctx=ast.Load()),
+                args=[node],
+                keywords=[])  #Wrap the node itself in an Integer call
         else:
             return node
         
@@ -115,7 +140,7 @@ def main():
     entTransformer().visit(a)
     ast.fix_missing_locations(a)
     co = compile(a, '<ast>', 'exec')
-    #print(astor.dump_tree(a))
+    print(astor.dump_tree(a))
     print(astor.to_source(a))
     exec(co)
 
