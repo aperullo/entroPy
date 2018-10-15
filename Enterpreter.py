@@ -7,6 +7,7 @@ import os
 from Float import Float
 from Integer import Integer
 from String import String
+from Char import Char
 import astor
 
 #replaces all primitive types with calls to the entropy classes
@@ -135,13 +136,22 @@ def main():
     path = "F:\\dev\\git\\entroPy\\test.py"
     source_code = open(path).read()
     #print(source_code)
-
     a = ast.parse(source_code)
     entTransformer().visit(a)
     ast.fix_missing_locations(a)
     co = compile(a, '<ast>', 'exec')
     print(astor.dump_tree(a))
     print(astor.to_source(a))
-    exec(co)
+
+    # clean namespace for the program we are interpreting.
+    # Give it access to the entropy types so that they exist within the namespace, since source code basically goes from "hi" -> String("hi")
+    # Also automatically gets filled in with builtins by exec, so its as if the program was called from the top level.
+    new_namespace = {'Char': Char,
+                     'String': String,
+                     'Float': Float,
+                     'Integer': Integer}
+    exec(co, new_namespace)     # exec is more dangerous than eval, don't run code you don't trust.
+
+
 
 main()
