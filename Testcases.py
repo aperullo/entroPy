@@ -1,6 +1,8 @@
 import unittest
 from Float import Float
 from Integer import Integer
+from String import String
+from Char import Char
 import Settings
 
 class TestFloatMethods(unittest.TestCase):
@@ -636,7 +638,445 @@ class TestIntegerMethods(unittest.TestCase):
         self.assertEqual(Integer(-1.123456).__trunc__(), Integer(-1), "__trunc__(): trunc(neg) -> neg int")
         self.assertEqual(Integer(0).__trunc__(), Integer(0), "__trunc__(): trunc(0) -> 0")
 
+
+class TestCharMethods(unittest.TestCase):
+    # assertEquals actually has to rely on the Char's implementation of __eq__ to work, so we need to test that first.
+    def test__eq__(self):
+        self.assertTrue(Char("A") == Char("A"), "__eq__: comparing two Char()")
+
+        self.assertFalse(Char("A") == Char("B"), "__eq__: comparing two Char()")
+
+        self.assertTrue(Char("A") == "A", "__eq__: comparing a Char() and a string")
+
+        self.assertTrue("A" == Char("A"), "__eq__: comparing a string and a Char()")
+
+        self.assertFalse(Char("A") == "B", "__eq__: comparing a Char() and a string")
+
+        self.assertFalse("B" == Char("A"), "__eq__: comparing a string and a Char()")
+
+    def test__ne__(self):
+        self.assertFalse(Char("A") != Char("A"), "__eq__: comparing two Char()")
+
+        self.assertTrue(Char("A") != Char("B"), "__eq__: comparing two Char()")
+
+        self.assertFalse(Char("A") != "A", "__eq__: comparing a Char() and a string")
+
+        self.assertFalse("A" != Char("A"), "__eq__: comparing a string and a Char()")
+
+        self.assertTrue(Char("A") != "B", "__eq__: comparing a Char() and a string")
+
+        self.assertTrue("B" != Char("A"), "__eq__: comparing a string and a Char()")
+
+    def test_mutate(self):
+        a = Char("a")
+        # variable should be the same the first time its read
+        self.assertEqual(a, "a")
+
+        #since chars drift slowly, 1 read will not guaruntee a change.
+        for x in range(32):
+            a.__str__()
+
+        #variable should have changed after it was read once.
+        self.assertNotEqual(a, "a", "_mutate: value didnt mutate")
+
+    def test__str__(self):
+        self.assertEqual(str(Char("A")), "A", "__str__: str()")
+
+        self.assertEqual(Char("A").__str__(), "A", "__str__: __str__()")
+
+        self.assertEqual(str(Char("A")), Char("A").__str__(), "__str__: compare str() to __str__()")
+
+    def test__repr__(self):
+        a = Char("A")  # since repr shouldn't mutate values we can use the same var in all tests
+
+        self.assertEqual(repr(a), "Char(_val='A')", "__repr__: repr()")
+
+        self.assertEqual(a.__repr__(), "Char(_val='A')", "__repr__: __repr__()")
+
+        self.assertEqual(repr(a), a.__repr__(), "__repr__: compare repr() to __repr__()")
+
+        self.assertEqual(a, "A", "__repr__: mutated value")  # test value is still "Aa" and hasn't mutated
+
+
+class TestStringMethods(unittest.TestCase):
+
+    def setUp(self):
+        Settings.MUTATION = False
+        pass
+
+    def tearDown(self):
+        Settings.MUTATION = True
+        pass
+
+    # assertEquals actually has to rely on the String's implementation of __eq__ to work, so we need to test that first.
+    def test__eq__(self):
+        self.assertTrue(String("Aa") == String("Aa"), "__eq__: comparing two Strings()")
+
+        self.assertFalse(String("Aa") == String("Bb"), "__eq__: comparing two Strings()")
+
+        self.assertTrue(String("Aa") == "Aa", "__eq__: comparing a String() and a string")
+
+        self.assertTrue("Aa" == String("Aa"), "__eq__: comparing a string and a String()")
+
+        self.assertFalse(String("Aa") == "Bb", "__eq__: comparing a String() and a string")
+
+        self.assertFalse("Bb" == String("Aa"), "__eq__: comparing a string and a String()")
+
+    def test__ne__(self):
+        self.assertFalse(String("Aa") != String("Aa"), "__ne__: comparing two Strings()")
+
+        self.assertTrue(String("Aa") != String("Bb"), "__ne__: comparing two Strings()")
+
+        self.assertFalse(String("Aa") != "Aa", "__ne__: comparing a String() and a string")
+
+        self.assertFalse("Aa" != String("Aa"), "__ne__: comparing a string and a String()")
+
+        self.assertTrue(String("Aa") != "Bb", "__ne__: comparing a String() and a string")
+
+        self.assertTrue("Bb" != String("Aa"), "__ne__: comparing a string and a String()")
+
+    def test__lt__(self):
+        self.assertTrue(String("Aa") < String("Bb"), "__lt__: comparing two Strings()")
+        self.assertFalse(String("Aa") < String("Aa"), "__lt__: comparing two Strings()")
+        self.assertFalse(String("Bb") < String("Aa"), "__lt__: comparing two Strings()")
+
+        self.assertTrue(String("Aa") < "Bb", "__lt__: comparing a String() and a string")
+        self.assertFalse(String("Aa") < "Aa", "__lt__: comparing a String() and a string")
+        self.assertFalse(String("Bb") < "Aa", "__lt__: comparing a String() and a string")
+
+        self.assertTrue("Aa" < String("Bb"), "__lt__: comparing a string and a String()")
+        self.assertFalse("Aa" < String("Aa"), "__lt__: comparing a string and a String()")
+        self.assertFalse("Bb" < String("Aa"), "__lt__: comparing a string and a String()")
+
+    def test__gt__(self):
+        self.assertFalse(String("Aa") > String("Bb"), "__gt__: comparing two Strings()")
+        self.assertFalse(String("Aa") > String("Aa"), "__gt__: comparing two Strings()")
+        self.assertTrue(String("Bb") > String("Aa"), "__gt__: comparing two Strings()")
+
+        self.assertFalse(String("Aa") > "Bb", "__gt__: comparing a String() and a string")
+        self.assertFalse(String("Aa") > "Aa", "__gt__: comparing a String() and a string")
+        self.assertTrue(String("Bb") > "Aa", "__gt__: comparing a String() and a string")
+
+        self.assertFalse("Aa" > String("Bb"), "__gt__: comparing a string and a String()")
+        self.assertFalse("Aa" > String("Aa"), "__gt__: comparing a string and a String()")
+        self.assertTrue("Bb" > String("Aa"), "__gt__: comparing a string and a String()")
+
+    def test__le__(self):
+        self.assertTrue(String("Aa") <= String("Bb"), "__le__: comparing two Strings()")
+        self.assertTrue(String("Aa") <= String("Aa"), "__le__: comparing two Strings()")
+        self.assertFalse(String("Bb") <= String("Aa"), "__le__: comparing two Strings()")
+
+        self.assertTrue(String("Aa") <= "Bb", "__le__: comparing a String() and a string")
+        self.assertTrue(String("Aa") <= "Aa", "__le__: comparing a String() and a string")
+        self.assertFalse(String("Bb") <= "Aa", "__le__: comparing a String() and a string")
+
+        self.assertTrue("Aa" <= String("Bb"), "__le__: comparing a string and a String()")
+        self.assertTrue("Aa" <= String("Aa"), "__le__: comparing a string and a String()")
+        self.assertFalse("Bb" <= String("Aa"), "__le__: comparing a string and a String()")
+
+    def test__ge__(self):
+        self.assertFalse(String("Aa") >= String("Bb"), "__ge__: comparing two Strings()")
+        self.assertTrue(String("Aa") >= String("Aa"), "__ge__: comparing two Strings()")
+        self.assertTrue(String("Bb") >= String("Aa"), "__ge__: comparing two Strings()")
+
+        self.assertFalse(String("Aa") >= "Bb", "__ge__: comparing a String() and a string")
+        self.assertTrue(String("Aa") >= "Aa", "__ge__: comparing a String() and a string")
+        self.assertTrue(String("Bb") >= "Aa", "__ge__: comparing a String() and a string")
+
+        self.assertFalse("Aa" >= String("Bb"), "__ge__: comparing a string and a String()")
+        self.assertTrue("Aa" >= String("Aa"), "__ge__: comparing a string and a String()")
+        self.assertTrue("Bb" >= String("Aa"), "__ge__: comparing a string and a String()")
+
+    def test__contains__(self):
+        self.assertTrue(String("abcde").__contains__(String("a")))
+        self.assertTrue(String("a") in String("abcde"))
+        self.assertTrue(String("abcde").__contains__("a"))
+        self.assertTrue("a" in String("abcde"))
+
+        self.assertTrue(String("abcde").__contains__(String("ab")))
+        self.assertTrue(String("ab") in String("abcde"))
+        self.assertTrue(String("abcde").__contains__("ab"))
+        self.assertTrue("ab" in String("abcde"))
+
+        self.assertFalse(String("bcde").__contains__(String("a")))
+        self.assertFalse(String("a") in String("bcde"))
+        self.assertFalse(String("bcde").__contains__("a"))
+        self.assertFalse("a" in String("bcde"))
+
+        self.assertFalse(String("abcde").__contains__(String("ac")))
+        self.assertFalse(String("ac") in String("abcde"))
+        self.assertFalse(String("abcde").__contains__("ac"))
+        self.assertFalse("ac" in String("abcde"))
+
+    def test__str__(self):
+        self.assertEqual(str(String("Aa")), "Aa", "__str__: str()")
+
+        self.assertEqual(String("Aa").__str__(), "Aa", "__str__: __str__()")
+
+        self.assertEqual(str(String("Aa")), String("Aa").__str__(), "__str__: compare str() to __str__()")
+
+    def test__repr__(self):
+        a = String("Aa")  # since repr shouldn't mutate values we can use the same var in all tests
+
+        self.assertEqual(repr(a), "String(_chars=(Char(_val='A'), Char(_val='a')))", "__repr__: repr()")
+
+        self.assertEqual(a.__repr__(), "String(_chars=(Char(_val='A'), Char(_val='a')))", "__repr__: __repr__()")
+
+        self.assertEqual(repr(a), a.__repr__(), "__repr__: compare repr() to __repr__()")
+
+        self.assertEqual(a, "Aa", "__repr__: mutated value")  # test value is still "Aa" and hasn't mutated
+
+    def test__len__(self):
+        a = (len(String("abcd")))
+        self.assertEqual(a, Integer(4), "__len__: length did not match")
+        self.assertIsInstance(a, int, "__len__: did not return an Int")
+
+    def test_capitalize(self):
+        self.assertEqual(String("abcde").capitalize(), "Abcde")
+        self.assertEqual(String("ABCDE").capitalize(), "Abcde")
+        self.assertEqual(String("Ab cde").capitalize(), "Ab cde")
+        self.assertEqual(String(" ").capitalize(), " ")
+        self.assertEqual(String("").capitalize(), "")
+
+    def test_casefold(self):
+        self.assertEqual(String("abcde").casefold(), "abcde")
+        self.assertEqual(String("ABCDE").casefold(), "abcde")
+        self.assertEqual(String("Ab cde").casefold(), "ab cde")
+        self.assertEqual(String(" ").casefold(), " ")
+        self.assertEqual(String("").casefold(), "")
+
+    def test_center(self):
+        self.assertEqual(String("abcde").center(10, " "), "  abcde   ")
+        self.assertEqual(String("ABCDE").center(5, "-"), "ABCDE")
+        self.assertEqual(String("Ab cde").center(10, "-"), "--Ab cde--")
+        self.assertEqual(String(" ").center(9, "-"), "---- ----")
+        self.assertEqual(String("").center(10, " "), "          ")
+
+    def test_count(self):
+        self.assertEqual(String("abcde").count(String("a")), 1)
+        self.assertEqual(String("ABCDE").count("f"), 0)
+        self.assertEqual(String("cabcdec").count("c"), 3)
+        self.assertEqual(String("cabcdec").count("c", 1, 6), 1)
+        self.assertEqual(String("").count(""), 1)
+
+    #todo: doesn't work because Chars only accept certain characters, and tab isn't one of them.
+    def test_expandtabs(self):
+        #self.assertEqual(String("\t abcde").expandtabs(), "         abcde")
+        #self.assertEqual(String("\tabcde").expandtabs(tabsize=4), "    abcde")
+        pass
+
+    def test_index(self):
+        self.assertEqual(String("abcde").index(String("a")), 0)
+        self.assertEqual(String("abcdec").index("c"), 2)
+        self.assertEqual(String("cabcdec").index("c", start=2, end=5), 3)
+        self.assertRaises(ValueError, lambda: String("abcde").index("f"))
+
+    def test_isalnum(self):
+        self.assertTrue(String("abcde123").isalnum())
+        self.assertFalse(String("abcde!").isalnum())
+        self.assertFalse(String("").isalnum())
+
+    def test_isalpha(self):
+        self.assertTrue(String("abcde").isalpha())
+        self.assertFalse(String("abcde123").isalpha())
+        self.assertFalse(String("").isalpha())
+
+    def test_isdecimal(self):
+        self.assertTrue(String("012345").isdecimal())
+        self.assertFalse(String("1234A").isdecimal())
+        self.assertFalse(String("").isdecimal())
+
+    def test_isdigit(self):
+        self.assertTrue(String("012345").isdigit())
+        self.assertFalse(String("1234A").isdigit())
+        self.assertFalse(String("").isdigit())
+
+    def test_isidentifier(self):
+        self.assertFalse(String("012345").isidentifier())
+        self.assertTrue(String("A123").isidentifier())
+        self.assertFalse(String("$").isidentifier())
+
+    def test_islower(self):
+        self.assertTrue(String("abcde").islower())
+        self.assertFalse(String("Abcde").islower())
+        self.assertFalse(String("").islower())
+
+    def test_isnumeric(self):
+        self.assertTrue(String("012345").isdigit())
+        self.assertFalse(String("1234A").isdigit())
+        self.assertFalse(String("").isdigit())
+
+    def test_isprintable(self):
+        self.assertTrue(String("012345").isprintable())
+        self.assertTrue(String("").isprintable())
+
+    def test_isspace(self):
+        self.assertTrue(String("     ").isspace())
+        self.assertFalse(String("  a").isspace())
+        self.assertFalse(String("").isspace())
+
+    def test_istitle(self):
+        self.assertTrue(String("Abcde").istitle())
+        self.assertTrue(String("Ab Cde").istitle())
+        self.assertFalse(String("abcDe").istitle())
+        self.assertFalse(String("").istitle())
+
+    def test_isupper(self):
+        self.assertTrue(String("ABCDE").isupper())
+        self.assertFalse(String("Abcde").isupper())
+        self.assertFalse(String("").isupper())
+
+    def test_ljust(self):
+        self.assertEqual(String("abcde").ljust(3, " "), "abcde")
+        self.assertEqual(String("ABCDE").ljust(0, "-"), "ABCDE")
+        self.assertEqual(String("Abcde").ljust(10, "-"), "Abcde-----")
+        self.assertEqual(String(" ").ljust(9, "-"), " --------")
+        self.assertEqual(String("").ljust(10, " "), "          ")
+
+    def test_lower(self):
+        self.assertEqual(String("abcde").lower(), "abcde")
+        self.assertEqual(String("ABCDE").lower(), "abcde")
+        self.assertEqual(String("Ab cde").lower(), "ab cde")
+        self.assertEqual(String(" ").lower(), " ")
+        self.assertEqual(String("").lower(), "")
+
+    def test_lstrip(self):
+        self.assertEqual(String("   spacious   ").lstrip(), "spacious   ")
+        self.assertEqual(String("AABAA").lstrip(String("A")), "BAA")
+        self.assertEqual(String("ABBA").lstrip("AB"), "")
+        self.assertEqual(String("ABCABBA").lstrip("AB"), "CABBA")
+
+    #todo: implement partition and create test
+    def test_partition(self):
+        pass
+
+    def test_replace(self):
+        self.assertEqual(String("abcde").replace("a","b"), "bbcde")
+        self.assertEqual(String("ABABE").replace("AB","BB"), "BBBBE")
+        self.assertEqual(String("ABABE").replace("AB", "BB", count=1), "BBABE")
+        self.assertEqual(String("Ab cde").replace("a","b"), "Ab cde")
+        self.assertEqual(String("").replace("",""), "")
+
+    def test_rindex(self):
+        self.assertEqual(String("abcde").rindex("a"), 0)
+        self.assertEqual(String("abcdec").rindex("c"), 5)
+        self.assertEqual(String("cabcdec").rindex("c", start=2, end=5), 3)
+        self.assertRaises(ValueError, lambda: String("abcde").rindex("f"))
+
+    def test_rfind(self):
+        self.assertEqual(String("abcde").rfind("a"), 0)
+        self.assertEqual(String("abcdec").rfind("c"), 5)
+        self.assertEqual(String("cabcdec").rfind("c", start=2, end=5), 3)
+        self.assertEqual(String("abcde").rfind("f"), -1)
+
+    def test_rjust(self):
+        self.assertEqual(String("abcde").rjust(3, " "), "abcde")
+        self.assertEqual(String("ABCDE").rjust(0, "-"), "ABCDE")
+        self.assertEqual(String("Abcde").rjust(10, "-"), "-----Abcde")
+        self.assertEqual(String(" ").rjust(9, "-"), "-------- ")
+        self.assertEqual(String("").rjust(10, " "), "          ")
+
+    def test_rstrip(self):
+        self.assertEqual(String("   spacious   ").rstrip(), "   spacious")
+        self.assertEqual(String("AABAA").rstrip("A"), "AAB")
+        self.assertEqual(String("ABBA").rstrip("AB"), "")
+        self.assertEqual(String("ABCABBA").rstrip("AB"), "ABC")
+
+    # todo: implement rpartition and create test
+    def test_rpartition(self):
+        pass
+
+    def test_split(self):
+        self.assertEqual(String("a b c").split(), [String("a"), String("b"), String("c")]) #split on space by default
+        self.assertEqual(String("a b c").split(" ", 1), [String("a"), String("b c")])
+        self.assertEqual(String("a_b_c_d").split("_", 2), [String("a"), String("b"), String("c_d")])
+        self.assertEqual(String("").split(), [])
+
+    def test_rsplit(self):
+        self.assertEqual(String("a b c").rsplit(), [String("a"), String("b"), String("c")]) #split on space by default
+        self.assertEqual(String("a b c").rsplit(" ", 1), [String("a b"), String("c")])
+        self.assertEqual(String("a_b_c_d").rsplit("_", 2), [String("a_b"), String("c"), String("d")])
+        self.assertEqual(String("").rsplit(), [])
+
+    #todo: doesn't work because Chars only accept certain characters, and \n isnt one of them.
+    def test_splitlines(self):
+        #self.assertEqual(String("AB\nCD\n").splitlines(), [String("AB"), String("CD")])  # split on space by default
+        #self.assertEqual(String("AB\nCD\n").splitlines(True), [String("AB\n"), String("CD\n")])
+        #self.assertEqual(String("a_b_c_d").rsplit("_", 2), [String("a_b"), String("c"), String("d")])
+        #self.assertEqual(String("").rsplit(), [])
+        pass
+
+    def test_strip(self):
+        self.assertEqual(String("   spacious   ").strip(), "spacious")
+        self.assertEqual(String("AABAA").strip("A"), "B")
+        self.assertEqual(String("ABBA").strip("AB"), "")
+        self.assertEqual(String("ABCABBA").strip("AB"), "C")
+
+    def test_swapcase(self):
+        self.assertEqual(String("abcde").swapcase(), "ABCDE")
+        self.assertEqual(String("ABCDE").swapcase(), "abcde")
+        self.assertEqual(String("Ab cde").swapcase(), "aB CDE")
+        self.assertEqual(String(" ").swapcase(), " ")
+        self.assertEqual(String("").swapcase(), "")
+
+    def test_title(self):
+        self.assertEqual(String("abcde").title(), "Abcde")
+        self.assertEqual(String("ABCDE").title(), "Abcde")
+        self.assertEqual(String("Ab cde").title(), "Ab Cde")
+        self.assertEqual(String(" ").title(), " ")
+        self.assertEqual(String("").title(), "")
+
+    def test_upper(self):
+        self.assertEqual(String("abcde").upper(), "ABCDE")
+        self.assertEqual(String("ABCDE").upper(), "ABCDE")
+        self.assertEqual(String("Ab cde").upper(), "AB CDE")
+        self.assertEqual(String(" ").upper(), " ")
+        self.assertEqual(String("").upper(), "")
+
+    def test_zfill(self):
+        self.assertEqual(String("abcde").zfill(3), "abcde")
+        self.assertEqual(String("ABCDE").zfill(0), "ABCDE")
+        self.assertEqual(String("Abcde").zfill(10), "00000Abcde")
+        self.assertEqual(String(" ").zfill(9), "00000000 ")
+        self.assertEqual(String("").zfill(10), "0000000000")
+
+    def test__getitem__(self):
+        self.assertEqual(String("abcde").__getitem__(0), "a")
+        self.assertEqual(String("abcde")[1], "b")
+        self.assertRaises(IndexError, lambda: String("abcde")[6])
+        self.assertRaises(IndexError, lambda: String("abcde").__getitem__(6))
+
+    def test__add__(self):
+        self.assertEqual(String("a") + String("b"), String("ab"), "__add__: adding String() to String()")
+        self.assertEqual(String("a") + "b", String("ab"), "__add__: adding String() to str")
+
+    def test__radd__(self):
+        self.assertEqual("a" + String("b"), String("ab"), "__radd__: adding String() to String()")
+
+    def test__mul__(self):
+        self.assertEqual(String("a") * Integer(2), String("aa"), "__mul__: adding String() to String()")
+        self.assertEqual(String("a") * 2, String("aa"), "__mul__: adding String() to str")
+
+    def test__rmul__(self):
+        self.assertEqual(Integer(2) * String("a"), String("aa"), "__rmul__: adding String() to String()")
+        self.assertEqual(2 * String("a"), String("aa"), "__rmul__: adding String() to String()")
+
+    #todo: figure out what string mod is supposed to do.
+    def test__mod__(self):
+        pass
+
+    def test__iter__(self):
+        a = iter(String("abc"))
+        self.assertEqual(next(a), String("a"))
+        self.assertEqual(next(a), String("b"))
+        self.assertEqual(next(a), String("c"))
+        self.assertRaise(StopIteration, next(a))
+
+    def test__reversed__(self):
+        self.assertEqual(reversed(String("abc")), String("cba"))
+        self.assertEqual(reversed(String("aba")), String("aba"))
+        self.assertEqual(reversed(String("")), String(""))
+
+
 if __name__ == '__main__':
     unittest.main()
-
-#Float tests
