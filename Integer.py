@@ -1,6 +1,6 @@
 from random import random, randint, uniform
 from math import trunc, floor, ceil
-import Float
+import Float, String
 import Settings
 
 
@@ -25,7 +25,6 @@ class Integer:
         self._val = float(round(value, 0)) #val always needs to be a float.
 
     # mutates the value of this variable
-    # TODO Rebuild integer mutate so that it mutates the same as float
     def __mutate(self):
         # Random number between 1 and MUTATION_RATE * the magnitude of the value itself.
         # If Mutation rate is 1 then there is stability at 1 and all numbers will hover around 1 on average, but may fluctuate to higher values.
@@ -33,8 +32,6 @@ class Integer:
         # It can still settle at 1 or 0, but it is much easier for it to escape from that stable place.
         # This finally achieves the behavior I want.
 
-        # mutate_val = uniform(1.0, Settings.get_mutation_rate("Integer") * abs(self._val) if abs(self._val) >= 1 else 1.0)  #multiply by the magnitude of the value or atleast by 1.
-        # self._val = self._val + (mutate_val if random() < 0.5 else -mutate_val) #randomly add or subtract
         MUTATION_RATE = Settings.get_mutation_rate("Integer")
         mutate_val = uniform(1.0, abs(self._val) if abs(self._val) >= 1 else 1.0)  #multiply by the magnitude of the value or atleast by 1.
         mutate_val *= MUTATION_RATE
@@ -42,47 +39,46 @@ class Integer:
 
 
     # String and printing
-    def __str__(self):
+    def __str__(self) -> str:
         return int(self.val).__str__()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         # return int(self.val).__str__()
         return "Integer(_val=" + self._val.__repr__() + ")"
 
 
     # These methods allow entropy types to imitate their primitive counterparts in most situations.
     # Some functions will try running the int or index function on an object to see if it can be duck typed to acting as an int.
-    def __index__(self):
+    def __index__(self) -> int:
         return int(self.val)
 
-    def __int__(self):
+    def __int__(self) -> int:
         return int(self.val)
 
-    def __float__(self):
+    def __float__(self) -> float:
         return float(round(self.val, 0)) #val always needs to be a float.
 
     # Comparison ops. These used to return entropy booleans but that ended up causing while loops to just simply stop with no visible explanation.
     # For the sake of making the language usable, entropy booleans will probably end up confined to only user made booleans, or just be removed entirely.
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.val == float(other)
 
-    def __ne__(self, other):
+    def __ne__(self, other) -> bool:
         return self.val != float(other)
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         return self.val < float(other)
 
-    def __gt__(self, other):
+    def __gt__(self, other) -> bool:
         return self.val > float(other)
 
-    def __le__(self, other):
+    def __le__(self, other) -> bool:
         return self.val <= float(other)
 
-    def __ge__(self, other):
+    def __ge__(self, other) -> bool:
         return self.val >= float(other)
 
     # Math ops overrides. These persist the type by making the result an entropy type.
-    # Todo: Test the math ops
     def __add__(self, other):
         return Integer(self.val + float(other))
 
@@ -106,6 +102,8 @@ class Integer:
         return self
 
     def __mul__(self, other):
+        if isinstance(other, String.String):
+            return NotImplemented  # deals with Integer * String by passing priority to String's rmul.
         return Integer(self.val * float(other))
 
     def __rmul__(self, other):
@@ -193,6 +191,9 @@ class Integer:
 
     def __ceil__(self):
         return Integer(ceil(self.val))
+
+    def __hash__(self):
+        return int(hash(self.val))
 
 
 def test():

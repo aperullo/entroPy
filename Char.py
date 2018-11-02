@@ -2,7 +2,6 @@ from random import random
 import String
 import Settings
 
-MUTATION_RATE = Settings.get_mutation_rate("Char")
 LOWER_BOUND = 32 #" " in ascii
 UPPER_BOUND = 126 #"~" in ascii
 
@@ -15,7 +14,7 @@ class Char:
 
     def __init__(self, value):
         #try to use value like a char is pythonic, hopefully its not a number representing the ascii value or that number as a string.
-        self._val = self.__validate(ord(value))
+        self._val = self.__validate(ord(str(value)))
 
     #makes sure that the value stays within our limited ascii range
     #there are plenty of fancy ways to write clamp functions but this is the most readable;
@@ -37,12 +36,12 @@ class Char:
     #properties only to be used externally because otherwise recursive reference to mutate
     @val.setter
     def val(self, value):
-        self._val = self.__validate(ord(value))
+        self._val = self.__validate(ord(str(value)))
 
     #mutates the value of this variable
     def __mutate(self):
         #random number between 0 and 1 is scaled down by the mutation rate and then scaled again by the value itself
-        mutate_val = self._val * MUTATION_RATE * random()
+        mutate_val = self._val * Settings.get_mutation_rate("Char") * random()
         self._val = self._val + (mutate_val if random() < 0.5 else -mutate_val) #randomly add or subtract
 
 
@@ -51,17 +50,20 @@ class Char:
         return chr(self.val).__str__()
 
     def __repr__(self):
-        return chr(self.val).__repr__()
+        return "Char(_val='"+chr(int(self._val))+"')"
 
 
-    # TODO add overrides for comparisons
     # Comparison ops. These used to return entropy booleans but that ended up causing while loops to just simply stop with no visible explanation.
     # For the sake of making the language usable, entropy booleans will probably end up confined to only user made booleans, or just be removed entirely.
-    def __eq__(self, other):
-        return self.val == other.val
+    def __eq__(self, other) -> bool:
+        return chr(self.val) == str(other)
+
+    def __ne__(self, other) -> bool:
+        return chr(self.val) != str(other)
 
     def __add__(self, other):
         return String.String(self.__str__() + other.__str__())
+
 
 def test():
 
