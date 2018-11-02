@@ -58,22 +58,22 @@ class entTransformer(ast.NodeTransformer):
         else:  # if node value was somehow not a str, don't touch it
             return node
 
-    #all nodes of type NameConstant are checked for being booleans and converted. If not they are left alone.
-    def visit_NameConstant(self, node):
-        self.generic_visit(node)
-        # print(node)
-        # print(node.value)
-        # print(type(node.value))
-
-        if isinstance(node.value, bool): # if node value is a bool, call the Boolean constructor over it.
-            return ast.Call(
-                func=ast.Name(
-                    id='Boolean',
-                    ctx=ast.Load()),
-                args=[ast.NameConstant(value=node.value)],
-                keywords=[])
-        else:  # if node value was not a bool (IE was NoneType), don't touch it.
-            return node
+    # #all nodes of type NameConstant are checked for being booleans and converted. If not they are left alone.
+    # def visit_NameConstant(self, node):
+    #     self.generic_visit(node)
+    #     # print(node)
+    #     # print(node.value)
+    #     # print(type(node.value))
+    #
+    #     if isinstance(node.value, bool): # if node value is a bool, call the Boolean constructor over it.
+    #         return ast.Call(
+    #             func=ast.Name(
+    #                 id='Boolean',
+    #                 ctx=ast.Load()),
+    #             args=[ast.NameConstant(value=node.value)],
+    #             keywords=[])
+    #     else:  # if node value was not a bool (IE was NoneType), don't touch it.
+    #         return node
 
     def visit_Call(self, node):
         self.generic_visit(node)
