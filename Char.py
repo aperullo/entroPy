@@ -50,7 +50,8 @@ class Char:
         return chr(self.val).__str__()
 
     def __repr__(self):
-        return "Char(_val='"+chr(int(self._val))+"')"
+        return chr(self.val).__str__()
+        #return "Char(_val='"+chr(int(self._val))+"')"
 
 
     # Comparison ops. These used to return entropy booleans but that ended up causing while loops to just simply stop with no visible explanation.
